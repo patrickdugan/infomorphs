@@ -261,7 +261,7 @@ const Home = (props: HomeProps) => {
         <div className="card bg-primary mb-5">
           <div className={`${wallet ? " card-body p-3" : "p-0"}`}>
             <div className="card bg-base-200">
-              <div className="p-3">
+              <div className={`${wallet ? 'p-3' : ''}`}>
                 {" "}
                 {wallet && (
                   <>
