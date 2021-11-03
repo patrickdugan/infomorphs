@@ -45,12 +45,39 @@ export interface HomeProps {
   txTimeout: number;
 }
 
+// Hook
+function useWindowSize() {
+  // Initialize state with undefined width/height so server and client renders match
+  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures that effect is only run on mount
+  return windowSize;
+}
+
 const Home = (props: HomeProps) => {
   const [balance, setBalance] = useState<number>();
   const [isActive, setIsActive] = useState(false); // true when countdown completes
   const [isSoldOut, setIsSoldOut] = useState(false); // true when items remaining is zero
   const [isMinting, setIsMinting] = useState(false); // true when user got to press MINT
-
+  const { width } = useWindowSize();
   const [itemsAvailable, setItemsAvailable] = useState(0);
   // const [itemsRedeemed, setItemsRedeemed] = useState(0);
   const [itemsRemaining, setItemsRemaining] = useState(0);
@@ -70,16 +97,12 @@ const Home = (props: HomeProps) => {
     (async () => {
       if (!wallet) return;
 
-      const {
-        candyMachine,
-        goLiveDate,
-        itemsAvailable,
-        itemsRemaining,
-      } = await getCandyMachineState(
-        wallet as anchor.Wallet,
-        props.candyMachineId,
-        props.connection
-      );
+      const { candyMachine, goLiveDate, itemsAvailable, itemsRemaining } =
+        await getCandyMachineState(
+          wallet as anchor.Wallet,
+          props.candyMachineId,
+          props.connection
+        );
 
       setItemsAvailable(itemsAvailable);
       setItemsRemaining(itemsRemaining);
@@ -204,112 +227,86 @@ const Home = (props: HomeProps) => {
         <div className="flex flex-col justify-center items-center mb-5">
           <div className="filter drop-shadow-xl">
             <div
-              style={{ maxHeight: 600, overflow: "hidden" }}
+              style={{
+                maxHeight: width > 768 ? 600 : 400,
+                overflow: "hidden",
+                maxWidth: "calc(100% - 3rem)",
+                margin: "0 auto",
+              }}
               className="rounded-box"
             >
               <div className="carousel">
-                <div className="carousel-item" id="item1">
-                  <img
-                    className="m-0"
-                    src="carousel/1.png"
-                    alt="Carousel Image"
-                  />
-                </div>
-                <div className="carousel-item" id="item2">
-                  <img
-                    className="m-0"
-                    src="carousel/2.png"
-                    alt="Carousel Image"
-                  />
-                </div>
-                <div className="carousel-item" id="item3">
-                  <img
-                    className="m-0"
-                    src="carousel/3.png"
-                    alt="Carousel Image"
-                  />
-                </div>
-                <div className="carousel-item" id="item4">
-                  <img
-                    className="m-0"
-                    src="carousel/4.png"
-                    alt="Carousel Image"
-                  />
-                </div>
-                <div className="carousel-item" id="item5">
-                  <img
-                    className="m-0"
-                    src="carousel/5.png"
-                    alt="Carousel Image"
-                  />
-                </div>
+                {[0, 1, 2, 3, 4, 5].map((key) => (
+                  <div key={key} className="carousel-item" id={`item${key}`}>
+                    <img
+                      className="m-0"
+                      src={`carousel/${key}.png`}
+                      alt="Carousel Image"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex justify-center w-full py-4 space-x-2 mb-3">
-            <a href="/#item1" className="btn btn-xs btn-circle">
-              1
+          {[0, 1, 2, 3, 4, 5].map((key) => (
+            <a key={key} href={`/#item${key}`} className="btn btn-xs btn-circle">
+              {key + 1}
             </a>
-            <a href="/#item2" className="btn btn-xs btn-circle">
-              2
-            </a>
-            <a href="/#item3" className="btn btn-xs btn-circle">
-              3
-            </a>
-            <a href="/#item4" className="btn btn-xs btn-circle">
-              4
-            </a>
-          </div>
+          ))}
+        </div>
 
-        <div className="card bg-primary">
-          <div className="card-body">
-            {wallet && (
-              <div className="card bg-base-200">
-                <div className="card-body p-3">
-                  {" "}
-                  {wallet && (
-                    <>
-                    <div className="my-2">
-                      {shortenAddress(wallet.publicKey.toBase58() || "")} : {(balance || 0).toLocaleString()} SOL
+        <div className="card bg-primary mb-5">
+          <div className={`${wallet ? " card-body p-3" : "p-0"}`}>
+            <div className="card bg-base-200">
+              <div className="p-3">
+                {" "}
+                {wallet && (
+                  <>
+                    <div className="mt-2">
+                      {shortenAddress(wallet.publicKey.toBase58() || "")} :{" "}
+                      {(balance || 0).toLocaleString()} SOL
                     </div>
-                    <div  className="my-2"> Available: {itemsAvailable} / {itemsRemaining}</div>
-                    </>
-                  )}
-                  <MintContainer>
-                    {!wallet ? (
-                      <ConnectButton>Connect Wallet</ConnectButton>
-                    ) : (
-                      <MintButton
-                        disabled={isSoldOut || isMinting || !isActive}
-                        onClick={onMint}
-                        variant="contained"
-                      >
-                        {isSoldOut ? (
-                          "SOLD OUT"
-                        ) : isActive ? (
-                          isMinting ? (
-                            <CircularProgress />
-                          ) : (
-                            "MINT"
-                          )
+                    <div className="mb-2">
+                      {" "}
+                      Available: {itemsAvailable} / {itemsRemaining}
+                    </div>
+                  </>
+                )}
+                <MintContainer>
+                  {!wallet ? (
+                    <ConnectButton>Connect Wallet</ConnectButton>
+                  ) : (
+                    <MintButton
+                      disabled={isSoldOut || isMinting || !isActive}
+                      onClick={onMint}
+                      variant="contained"
+                    >
+                      {isSoldOut ? (
+                        "SOLD OUT"
+                      ) : isActive ? (
+                        isMinting ? (
+                          <CircularProgress />
                         ) : (
-                          <Countdown
-                            date={startDate}
-                            onMount={({ completed }) =>
-                              completed && setIsActive(true)
-                            }
-                            onComplete={() => setIsActive(true)}
-                            renderer={renderCounter}
-                          />
-                        )}
-                      </MintButton>
-                    )}
-                  </MintContainer>
-                </div>
+                          "MINT"
+                        )
+                      ) : (
+                        <Countdown
+                          date={startDate}
+                          onMount={({ completed }) =>
+                            completed && setIsActive(true)
+                          }
+                          onComplete={() => setIsActive(true)}
+                          renderer={renderCounter}
+                        />
+                      )}
+                    </MintButton>
+                  )}
+                </MintContainer>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
