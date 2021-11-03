@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/img-redundant-alt */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Countdown from "react-countdown";
@@ -19,7 +21,14 @@ import {
   shortenAddress,
 } from "./candy-machine";
 
-const ConnectButton = styled(WalletDialogButton)``;
+const ConnectButton = styled(WalletDialogButton)`
+  width: 100%;
+  text-alignt: center;
+
+  .MuiButton-label {
+    justify-content: center;
+  }
+`;
 
 const CounterText = styled.span``; // add your styles here
 
@@ -43,7 +52,7 @@ const Home = (props: HomeProps) => {
   const [isMinting, setIsMinting] = useState(false); // true when user got to press MINT
 
   const [itemsAvailable, setItemsAvailable] = useState(0);
-  const [itemsRedeemed, setItemsRedeemed] = useState(0);
+  // const [itemsRedeemed, setItemsRedeemed] = useState(0);
   const [itemsRemaining, setItemsRemaining] = useState(0);
 
   const [alertState, setAlertState] = useState<AlertState>({
@@ -66,7 +75,6 @@ const Home = (props: HomeProps) => {
         goLiveDate,
         itemsAvailable,
         itemsRemaining,
-        itemsRedeemed,
       } = await getCandyMachineState(
         wallet as anchor.Wallet,
         props.candyMachineId,
@@ -75,7 +83,7 @@ const Home = (props: HomeProps) => {
 
       setItemsAvailable(itemsAvailable);
       setItemsRemaining(itemsRemaining);
-      setItemsRedeemed(itemsRedeemed);
+      // setItemsRedeemed(itemsRedeemed);
 
       setIsSoldOut(itemsRemaining === 0);
       setStartDate(goLiveDate);
@@ -166,48 +174,145 @@ const Home = (props: HomeProps) => {
   ]);
 
   return (
-    <main>
-      {wallet && (
-        <p>Wallet {shortenAddress(wallet.publicKey.toBase58() || "")}</p>
-      )}
+    <main
+      className="py-4 artboard bg-base-200 flex flex-col items-center"
+      style={{ minHeight: "100vh", overflow: "auto" }}
+    >
+      <div>
+        <ul className="menu items-stretch px-3 shadow-lg bg-base-100 horizontal rounded-box mt-12">
+          <li className="bordered">
+            <a>Mint</a>
+          </li>
+          <li>
+            <a>Collections</a>
+          </li>
+          <li>
+            <a>Game</a>
+          </li>
+          <li>
+            <a>Leaderboard</a>
+          </li>
+          <li>
+            <a>Git</a>
+          </li>
+        </ul>
+      </div>
 
-      {wallet && <p>Balance: {(balance || 0).toLocaleString()} SOL</p>}
+      <div className="prose text-center">
+        <h1 className="mt-12 block">Infomorphs Set 1</h1>
 
-      {wallet && <p>Total Available: {itemsAvailable}</p>}
+        <div className="flex flex-col justify-center items-center mb-5">
+          <div className="filter drop-shadow-xl">
+            <div
+              style={{ maxHeight: 600, overflow: "hidden" }}
+              className="rounded-box"
+            >
+              <div className="carousel">
+                <div className="carousel-item" id="item1">
+                  <img
+                    className="m-0"
+                    src="carousel/1.png"
+                    alt="Carousel Image"
+                  />
+                </div>
+                <div className="carousel-item" id="item2">
+                  <img
+                    className="m-0"
+                    src="carousel/2.png"
+                    alt="Carousel Image"
+                  />
+                </div>
+                <div className="carousel-item" id="item3">
+                  <img
+                    className="m-0"
+                    src="carousel/3.png"
+                    alt="Carousel Image"
+                  />
+                </div>
+                <div className="carousel-item" id="item4">
+                  <img
+                    className="m-0"
+                    src="carousel/4.png"
+                    alt="Carousel Image"
+                  />
+                </div>
+                <div className="carousel-item" id="item5">
+                  <img
+                    className="m-0"
+                    src="carousel/5.png"
+                    alt="Carousel Image"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {wallet && <p>Redeemed: {itemsRedeemed}</p>}
+        <div className="flex justify-center w-full py-4 space-x-2 mb-3">
+            <a href="/#item1" className="btn btn-xs btn-circle">
+              1
+            </a>
+            <a href="/#item2" className="btn btn-xs btn-circle">
+              2
+            </a>
+            <a href="/#item3" className="btn btn-xs btn-circle">
+              3
+            </a>
+            <a href="/#item4" className="btn btn-xs btn-circle">
+              4
+            </a>
+          </div>
 
-      {wallet && <p>Remaining: {itemsRemaining}</p>}
-
-      <MintContainer>
-        {!wallet ? (
-          <ConnectButton>Connect Wallet</ConnectButton>
-        ) : (
-          <MintButton
-            disabled={isSoldOut || isMinting || !isActive}
-            onClick={onMint}
-            variant="contained"
-          >
-            {isSoldOut ? (
-              "SOLD OUT"
-            ) : isActive ? (
-              isMinting ? (
-                <CircularProgress />
-              ) : (
-                "MINT"
-              )
-            ) : (
-              <Countdown
-                date={startDate}
-                onMount={({ completed }) => completed && setIsActive(true)}
-                onComplete={() => setIsActive(true)}
-                renderer={renderCounter}
-              />
+        <div className="card bg-primary">
+          <div className="card-body">
+            {wallet && (
+              <div className="card bg-base-200">
+                <div className="card-body p-3">
+                  {" "}
+                  {wallet && (
+                    <>
+                    <div className="my-2">
+                      {shortenAddress(wallet.publicKey.toBase58() || "")} : {(balance || 0).toLocaleString()} SOL
+                    </div>
+                    <div  className="my-2"> Available: {itemsAvailable} / {itemsRemaining}</div>
+                    </>
+                  )}
+                  <MintContainer>
+                    {!wallet ? (
+                      <ConnectButton>Connect Wallet</ConnectButton>
+                    ) : (
+                      <MintButton
+                        disabled={isSoldOut || isMinting || !isActive}
+                        onClick={onMint}
+                        variant="contained"
+                      >
+                        {isSoldOut ? (
+                          "SOLD OUT"
+                        ) : isActive ? (
+                          isMinting ? (
+                            <CircularProgress />
+                          ) : (
+                            "MINT"
+                          )
+                        ) : (
+                          <Countdown
+                            date={startDate}
+                            onMount={({ completed }) =>
+                              completed && setIsActive(true)
+                            }
+                            onComplete={() => setIsActive(true)}
+                            renderer={renderCounter}
+                          />
+                        )}
+                      </MintButton>
+                    )}
+                  </MintContainer>
+                </div>
+              </div>
             )}
-          </MintButton>
-        )}
-      </MintContainer>
-
+          </div>
+        </div>
+      </div>
       <Snackbar
         open={alertState.open}
         autoHideDuration={6000}
