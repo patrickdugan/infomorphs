@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Countdown from "react-countdown";
-import { Button, CircularProgress, Snackbar } from "@material-ui/core";
+import { Button, CircularProgress, Snackbar, IconButton } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
+import {Twitter, ChatOutlined} from '@material-ui/icons'
+
 
 import * as anchor from "@project-serum/anchor";
 
@@ -322,7 +324,11 @@ const Home = (props: HomeProps) => {
           {alertState.message}
         </Alert>
       </Snackbar>
-      <div>hello</div>
+      <div> <IconButton color="primary" component="span">
+          <ChatOutlined />
+        </IconButton> <IconButton color="primary" component="span">
+          <Twitter />
+        </IconButton></div>
     </main>
   );
 };
