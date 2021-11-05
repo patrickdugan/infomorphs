@@ -222,7 +222,7 @@ const Home = (props: HomeProps) => {
       </div>
 
       <div className="prose text-center">
-        <h1 className="mt-12 block">Infomorphs Set 1</h1>
+        <h1 className="mt-12 block">Infomorphs Set 2: Tenet Swarms</h1>
 
         <div className="flex flex-col justify-center items-center mb-5">
           <div className="filter drop-shadow-xl">
