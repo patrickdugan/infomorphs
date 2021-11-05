@@ -204,7 +204,7 @@ const Home = (props: HomeProps) => {
       <div>
         <ul className="menu items-stretch px-3 shadow-lg bg-base-100 horizontal rounded-box mt-12">
           <li className="bordered">
-            <a>Mint</a>
+            <a>Minty</a>
           </li>
           <li>
             <a>Collections</a>
