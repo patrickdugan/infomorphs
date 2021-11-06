@@ -259,6 +259,8 @@ const Home = (props: HomeProps) => {
             </a>
           ))}
         </div>
+        
+        <p>Mint Price: 0.23 SOL</p>
 
         <div className="card bg-primary mb-5">
           <div className={`${wallet ? " card-body p-3" : "p-0"}`}>
