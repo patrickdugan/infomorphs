@@ -324,9 +324,9 @@ const Home = (props: HomeProps) => {
           {alertState.message}
         </Alert>
       </Snackbar>
-      <div> <IconButton color="primary" component={Link} to="/t.co/196xoYeTT6?amp=1">
+      <div> <IconButton color="primary" component="span">
           <ChatOutlined />
-        </IconButton> <IconButton color="primary" component={Link} to="/twitter.com/infomorphs">
+        </IconButton> <IconButton color="primary" component="span">
           <Twitter />
         </IconButton></div>
     </main>
